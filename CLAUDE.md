@@ -10,6 +10,38 @@
 3. ドキュメントの充実
 4. リリースプロセスの自動化
 
+## Spec駆動開発（Spec-Driven Development）
+
+このプロジェクトは **Spec Kit** を使用した仕様駆動開発をサポートしています。
+
+### Spec Kit ワークフロー
+
+新機能の開発は以下の順序で進めます：
+
+1. `/speckit.specify` - 機能仕様を作成
+2. `/speckit.clarify` - 曖昧性を解消（オプション）
+3. `/speckit.plan` - 実装計画を作成
+4. `/speckit.tasks` - タスクに分解
+5. `/speckit.implement` - 実装を実行
+
+### 使用例
+
+```
+# 新しいAnalyzerルールの仕様を作成
+/speckit.specify Unity 2022以降のnullable reference types対応Analyzerを追加
+
+# 実装計画を作成
+/speckit.plan Roslyn Analyzer APIを使用してC# 8.0のnullable context awarを検証
+
+# タスクに分解
+/speckit.tasks
+
+# 実装を実行
+/speckit.implement
+```
+
+詳細は[specs/README.md](specs/README.md)を参照してください。
+
 ## 実装哲学
 
 > 設計・実装は複雑にせずに、シンプルさの極限を追求してください
