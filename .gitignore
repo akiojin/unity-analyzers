@@ -1,0 +1,15 @@
+# Analyzer build artifacts (source is in Analyzers~)
+Analyzers~/bin/
+Analyzers~/obj/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+.vs/
