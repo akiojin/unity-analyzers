@@ -1,0 +1,47 @@
+services:
+  unity-analyzers-dev:
+    build: .
+    container_name: unity-analyzers-dev
+    volumes:
+      # プロジェクトディレクトリをマウント
+      - .:/unity-analyzers
+      # Bash履歴の永続化
+      - bash-history:/root/.bash_history_dir
+      # Claude設定の永続化
+      - claude-config:/root/.claude
+      # Git設定の永続化
+      - git-config:/root/.gitconfig_dir
+      # NuGetキャッシュの永続化（ビルド高速化）
+      - nuget-packages:/root/.nuget/packages
+    environment:
+      # Git設定
+      - GIT_USER_NAME=${GIT_USER_NAME:-}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL:-}
+      # GitHub認証
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN:-}
+      - GITHUB_USERNAME=${GITHUB_USERNAME:-}
+      # .NET設定
+      - DOTNET_CLI_TELEMETRY_OPTOUT=1
+      - DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+      - DOTNET_NOLOGO=1
+      # Bash履歴設定
+      - HISTFILE=/root/.bash_history_dir/.bash_history
+      - HISTSIZE=5000
+      - HISTFILESIZE=200000
+      # 開発環境設定
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+    working_dir: /unity-analyzers
+    command: bash
+
+volumes:
+  bash-history:
+    driver: local
+  claude-config:
+    driver: local
+  git-config:
+    driver: local
+  nuget-packages:
+    driver: local

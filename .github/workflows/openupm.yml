@@ -1,0 +1,61 @@
+name: Publish to OpenUPM
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install OpenUPM CLI
+        run: npm install -g openupm-cli
+
+      - name: Publish to OpenUPM
+        env:
+          OPENUPM_TOKEN: ${{ secrets.OPENUPM_TOKEN }}
+        run: |
+          # OpenUPM publishes packages by tracking GitHub releases
+          # This workflow serves as a trigger and validation step
+
+          echo "Package will be automatically published to OpenUPM"
+          echo "Make sure your package is listed in OpenUPM registry"
+          echo "Visit: https://openupm.com/packages/com.akiojin.unity.analyzers/"
+
+          # Validate package.json
+          if [ ! -f "package.json" ]; then
+            echo "Error: package.json not found"
+            exit 1
+          fi
+
+          # Extract package name and version
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+
+          echo "Package: $PACKAGE_NAME"
+          echo "Version: $PACKAGE_VERSION"
+
+          # Note: Actual OpenUPM publishing is done automatically by OpenUPM bot
+          # when it detects a new release on GitHub
+          echo "OpenUPM will automatically detect and publish this release"
+
+      - name: Create OpenUPM badge
+        run: |
+          echo "Add this badge to your README.md:"
+          echo "[![openupm](https://img.shields.io/npm/v/com.akiojin.unity.analyzers?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.akiojin.unity.analyzers/)"

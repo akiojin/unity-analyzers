@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Check if package.json, package-lock.json, or .csproj files changed
+if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -E 'package(-lock)?\.json|\.csproj$'; then
+  echo ""
+  echo "⚠️  Dependencies may have changed:"
+  echo ""
+
+  # Check for Node.js dependencies
+  if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -E 'package(-lock)?\.json'; then
+    echo "   📦 package.json or package-lock.json has changed."
+    echo "      Run 'npm install' to update Node.js dependencies."
+    echo ""
+  fi
+
+  # Check for .NET dependencies
+  if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep '\.csproj$'; then
+    echo "   📦 .csproj files have changed."
+    echo "      Run 'dotnet restore' to update .NET dependencies."
+    echo ""
+  fi
+fi
