@@ -1,3 +1,4 @@
 {
-  ".": "0.1.0"
+  ".": "0.1.0",
+  "UnityAnalyzer/Packages/com.akiojin.unity.analyzers": "1.0.0"
 }
