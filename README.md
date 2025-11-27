@@ -12,7 +12,36 @@ Fail-Fast原則とUnity最適化ルールを強制するRoslyn Analyzerパッケ
 
 ## インストール
 
-### Unity Package Manager経由
+### OpenUPM経由（推奨）
+
+#### OpenUPM CLIを使用
+
+```bash
+openupm add com.akiojin.unity.analyzers
+```
+
+#### manifest.jsonにScoped Registryを設定
+
+`Packages/manifest.json`に以下を追加：
+
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.akiojin"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.akiojin.unity.analyzers": "0.1.0"
+  }
+}
+```
+
+### Git URL経由
 
 1. `Window > Package Manager`を開く
 2. `+`ボタンをクリック
@@ -23,7 +52,7 @@ Fail-Fast原則とUnity最適化ルールを強制するRoslyn Analyzerパッケ
 https://github.com/akiojin/unity-analyzers.git
 ```
 
-### manifest.json直接編集
+または`Packages/manifest.json`に直接追加：
 
 ```json
 {
