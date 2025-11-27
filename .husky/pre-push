@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+echo "Running pre-push checks..."
+
+# Check if dotnet is available
+if ! command -v dotnet &> /dev/null; then
+  echo "⚠️  dotnet CLI not found. Skipping pre-push checks."
+  exit 0
+fi
+
+# Get repository root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Check if analyzer project exists
+ANALYZER_PROJ="$REPO_ROOT/UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj"
+
+if [ ! -f "$ANALYZER_PROJ" ]; then
+  echo "⚠️  Analyzer project not found at expected location."
+  exit 0
+fi
+
+# Build the analyzer project
+echo "Building analyzer project..."
+dotnet build "$ANALYZER_PROJ" --configuration Release
+
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed. Please fix the errors and try again."
+  exit 1
+fi
+
+# Check if test project exists
+TEST_PROJ="$REPO_ROOT/UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.Tests.csproj"
+
+if [ -f "$TEST_PROJ" ]; then
+  echo "Running tests..."
+  dotnet test "$TEST_PROJ" --configuration Release --no-build
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Tests failed. Please fix the failing tests and try again."
+    exit 1
+  fi
+else
+  echo "ℹ️  No test project found. Skipping tests."
+fi
+
+echo "✅ Pre-push checks passed!"

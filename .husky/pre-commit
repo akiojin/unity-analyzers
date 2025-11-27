@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Get repository root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+# Get list of staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+# Exit if no files staged
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+echo "Running pre-commit checks..."
+
+# Filter C# files (exclude UnityAnalyzer/ directory to avoid existing CRLF issues)
+CS_FILES=$(echo "$STAGED_FILES" | grep -E '\.cs$' | grep -v '^UnityAnalyzer/' || true)
+
+if [ -n "$CS_FILES" ]; then
+  echo "Formatting C# files..."
+
+  # Check if dotnet is available
+  if ! command -v dotnet &> /dev/null; then
+    echo "⚠️  dotnet CLI not found. Skipping C# formatting."
+  else
+    # Run dotnet format on staged C# files
+    # Note: dotnet format works on project files, not individual files
+    # So we check if any C# files are in Analyzers~ directory
+    ANALYZER_CS_FILES=$(echo "$CS_FILES" | grep '^Analyzers~/' || true)
+
+    if [ -n "$ANALYZER_CS_FILES" ]; then
+      echo "Running dotnet format on Analyzers~ project..."
+      dotnet format Analyzers~/StrictRules.Analyzers.csproj --include $(echo "$ANALYZER_CS_FILES" | tr '\n' ',' | sed 's/,$//')
+
+      # Re-add formatted files to staging
+      echo "$ANALYZER_CS_FILES" | xargs git add
+    fi
+  fi
+fi
+
+# Filter Markdown files (exclude UnityAnalyzer/ directory)
+MD_FILES=$(echo "$STAGED_FILES" | grep '\.md$' | grep -v '^UnityAnalyzer/' || true)
+
+if [ -n "$MD_FILES" ]; then
+  echo "Linting Markdown files..."
+
+  # Check if markdownlint is available
+  if ! command -v markdownlint &> /dev/null; then
+    echo "⚠️  markdownlint not found. Installing temporarily..."
+    npx markdownlint-cli --config "$REPO_ROOT/.markdownlint.json" --fix $MD_FILES
+  else
+    markdownlint --config "$REPO_ROOT/.markdownlint.json" --fix $MD_FILES
+  fi
+
+  # Check if markdownlint succeeded (it returns non-zero if it found issues)
+  if [ $? -ne 0 ]; then
+    echo "⚠️  Markdown linting found issues. Files have been auto-fixed where possible."
+    echo "   Please review the changes and commit again."
+  fi
+
+  # Re-add modified files to staging
+  echo "$MD_FILES" | xargs git add
+fi
+
+echo "✅ Pre-commit checks passed!"

@@ -1,0 +1,48 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# C# files
+*.cs text eol=lf diff=csharp
+*.csproj text eol=lf
+*.sln text eol=lf
+
+# Unity files
+*.meta text eol=lf
+*.prefab text eol=lf
+*.unity text eol=lf
+*.asset text eol=lf
+*.asmdef text eol=lf
+
+# Configuration files
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Windows scripts
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Git files
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Binary files
+*.dll binary
+*.so binary
+*.dylib binary
+*.exe binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tga binary
+*.psd binary
+*.cubemap binary
+*.unitypackage binary

@@ -1,0 +1,65 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# Build outputs
+Analyzers~/bin
+Analyzers~/obj
+**/bin
+**/obj
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vspscc
+*.vssscc
+*.vsp
+*.vspx
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Unity
+Library/
+Temp/
+*.csproj
+*.unityproj
+*.sln
+*.tmp
+*.meta~
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Documentation
+*.md
+!README.md
+
+# CI/CD
+.release-please-*
+.commitlintrc.json
+
+# Misc
+*.log
+node_modules/
+package-lock.json

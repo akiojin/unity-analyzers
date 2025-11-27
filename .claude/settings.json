@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": []
+  },
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": [],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/block-git-branch-ops.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/block-cd-command.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/auto-suggest-claude-md-hook.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/auto-suggest-claude-md-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
