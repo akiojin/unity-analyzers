@@ -9,7 +9,7 @@ Fail-Fast原則とUnity最適化ルールを強制するRoslyn Analyzerパッケ
 - **UnityAnalyzer/** - Unity 6000.2.14f1プロジェクト（テスト・開発用）
   - **Packages/com.akiojin.unity.analyzers/** - 埋め込みUnityパッケージ
     - `Analyzers~/` - C# Roslyn Analyzerソースコード
-    - `Plugins/` - ビルド済みAnalyzer DLL
+    - `Plugins/` - ビルド済み Analyzer DLL
     - `Editor/` - Unity Editor拡張
     - `package.json` - パッケージ定義
 
