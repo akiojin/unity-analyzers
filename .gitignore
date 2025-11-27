@@ -13,3 +13,4 @@ Thumbs.db
 *.userprefs
 *.sln.docstates
 .vs/
+.worktrees/
