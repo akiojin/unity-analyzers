@@ -5,6 +5,7 @@ Unity Analyzersへのコントリビューションをご検討いただき、�
 ## 目次
 
 - [行動規範](#行動規範)
+- [ブランチ戦略](#ブランチ戦略)
 - [開発環境のセットアップ](#開発環境のセットアップ)
 - [コントリビューションの流れ](#コントリビューションの流れ)
 - [コミットメッセージ規約](#コミットメッセージ規約)
@@ -20,6 +21,59 @@ Unity Analyzersへのコントリビューションをご検討いただき、�
 - 建設的なフィードバックを提供する
 - プロジェクトの目標に焦点を当てる
 - 初心者を歓迎し、サポートする
+
+## ブランチ戦略
+
+Unity Analyzersプロジェクトは **2ブランチ戦略** を採用しています：
+
+### `develop` ブランチ（デフォルトブランチ）
+
+- **目的**: 開発中の機能を統合し、全てのCIチェックで品質を検証
+- **対象**: すべての feature ブランチからのプルリクエストは `develop` へ
+- **Required Checks**: 以下のすべてが必須
+  - Build & Test
+  - Markdown Linting
+  - C# Code Formatting
+  - Commit Message Lint
+- **strict mode**: 有効（最新のdevelopブランチとの同期が必要）
+
+### `main` ブランチ
+
+- **目的**: リリース済みコードを保持
+- **対象**: `develop` ブランチからのマージのみ（`/release` コマンド経由）
+- **Required Checks**: なし（developで既に検証済み）
+- **保護**: フォースプッシュ禁止、ブランチ削除禁止
+
+### ワークフロー図
+
+```
+┌─────────────┐
+│   feature   │  新機能開発
+│   branch    │
+└──────┬──────┘
+       │ PR (CI checks required)
+       ↓
+┌─────────────┐
+│   develop   │  全CIチェック必須
+│   branch    │  - Build & Test
+└──────┬──────┘  - Code Formatting
+       │          - Commit Lint
+       │          - Markdown Lint
+       │ /release コマンドでマージ
+       ↓
+┌─────────────┐
+│    main     │  リリース準備完了
+│   branch    │
+└──────┬──────┘
+       │ release-please
+       ↓
+┌─────────────┐
+│   Release   │  タグ作成 & パッケージ公開
+│   Created   │
+└─────────────┘
+```
+
+詳細は [`.github/config/README.md`](.github/config/README.md) を参照してください。
 
 ## 開発環境のセットアップ
 
@@ -95,7 +149,15 @@ cp bin/Release/netstandard2.0/StrictRules.Analyzers.dll ../Plugins/
    - 大きな変更の場合は、実装前にIssueで議論することを推奨
 
 2. **ブランチを作成**
+
+   `develop` ブランチから作業ブランチを作成してください：
+
 ```bash
+# まず develop ブランチに切り替え
+git checkout develop
+git pull origin develop
+
+# feature ブランチを作成
 git checkout -b feature/your-feature-name
 # または
 git checkout -b fix/your-bug-fix
@@ -140,6 +202,7 @@ git commit -m "feat(analyzer): add new rule for Unity best practices"
 git push origin feature/your-feature-name
 ```
    - GitHubでプルリクエストを作成
+   - **重要**: PRのベースブランチを `develop` に設定してください（デフォルト設定）
 
 ## コミットメッセージ規約
 
@@ -263,7 +326,7 @@ fix(workflow): resolve release build failure
 
 ### Required Checks（必須チェック）
 
-すべてのプルリクエストは、以下のチェックをパスする必要があります：
+`develop` ブランチへのすべてのプルリクエストは、以下のチェックをパスする必要があります：
 
 1. **Build & Test** - C# Analyzerのビルドとテスト
 2. **Commit Message Lint** - コミットメッセージの形式検証
@@ -277,7 +340,9 @@ fix(workflow): resolve release build failure
 - **Markdown Linting**: Markdownファイルのフォーマットエラーを修正してください
 - **C# Code Formatting**: `dotnet format`を実行してコードをフォーマットしてください
 
-詳細は[Branch Protection設定](.github/BRANCH_PROTECTION.md)を参照してください。
+**注意**: `main` ブランチへの直接のプルリクエストは受け付けていません。すべての変更は `develop` ブランチ経由で行ってください。
+
+詳細は[Branch Protection設定](.github/BRANCH_PROTECTION.md)および[`.github/config/README.md`](.github/config/README.md)を参照してください。
 
 ## コーディング規約
 
@@ -381,11 +446,13 @@ public async Task TestAnalyzerDetectsIssue()
 
 リリースは自動化されています：
 
-1. `main` ブランチへのマージ時、release-pleaseが自動的にリリースPRを作成
-2. リリースPRがマージされると、新しいバージョンが自動的にリリース
-3. GitHubリリースが作成され、OpenUPMへの公開がトリガーされます
+1. **開発**: feature ブランチで開発し、`develop` ブランチへPR作成
+2. **統合**: `develop` ブランチで全CIチェックが通過後、マージ
+3. **リリース準備**: メンテナーが `/release` コマンドで `develop` → `main` へマージ
+4. **自動リリース**: `main` ブランチへのマージ時、release-pleaseが自動的にリリースPRを作成
+5. **公開**: リリースPRがマージされると、新しいバージョンが自動的にリリースされ、GitHubリリースとOpenUPM公開がトリガーされます
 
-コントリビューターはリリースプロセスを気にする必要はありません。Conventional Commitsに従っていれば、適切にバージョンが管理されます。
+**コントリビューターの役割**: `develop` ブランチへのPRを作成するだけです。リリースプロセスはメンテナーが管理します。Conventional Commitsに従っていれば、適切にバージョンが管理されます。
 
 ## 質問やサポート
 
