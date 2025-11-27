@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Analyzers~/StrictRules.Analyzers.csproj
+
+      - name: Build analyzer
+        run: dotnet build Analyzers~/StrictRules.Analyzers.csproj --configuration Release --no-restore
+
+      - name: Run tests (if available)
+        run: |
+          if [ -f "Analyzers~/StrictRules.Analyzers.Tests.csproj" ]; then
+            dotnet test Analyzers~/StrictRules.Analyzers.Tests.csproj --configuration Release --no-restore
+          else
+            echo "No test project found, skipping tests"
+          fi
+
+      - name: Validate package structure
+        run: |
+          echo "Validating Unity package structure..."
+
+          # Check for required files
+          if [ ! -f "package.json" ]; then
+            echo "Error: package.json not found"
+            exit 1
+          fi
+
+          # Check for Plugins directory
+          if [ ! -d "Plugins" ]; then
+            echo "Warning: Plugins directory not found"
+          fi
+
+          # Check if DLL exists
+          if [ ! -f "Plugins/StrictRules.Analyzers.dll" ]; then
+            echo "Warning: StrictRules.Analyzers.dll not found in Plugins/"
+          fi
+
+          echo "Package structure validation completed"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: analyzer-dll
+          path: Analyzers~/bin/Release/netstandard2.0/StrictRules.Analyzers.dll
+          retention-days: 7

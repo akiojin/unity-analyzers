@@ -1,0 +1,14 @@
+{
+  "bootstrap-sha": "HEAD",
+  "default-branch": "main",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "com.akiojin.unity.analyzers",
+      "extra-files": [
+        "package.json"
+      ]
+    }
+  },
+  "pull-request-title-pattern": "chore(release): ${version}"
+}
