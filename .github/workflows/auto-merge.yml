@@ -1,0 +1,56 @@
+name: Auto Merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for PR
+    runs-on: ubuntu-latest
+    # Skip if PR is draft
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Enabling auto-merge for PR #${{ github.event.pull_request.number }}"
+          echo "Base: ${{ github.event.pull_request.base.ref }}"
+          echo "Head: ${{ github.event.pull_request.head.ref }}"
+
+          gh pr merge ${{ github.event.pull_request.number }} --auto --merge
+
+          echo "✅ Auto-merge enabled. PR will be merged automatically when all checks pass."
+
+      - name: Comment on PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<'EOF'
+          🤖 **Auto-merge enabled**
+
+          This PR will be automatically merged when:
+          - ✅ All required status checks pass
+          - ✅ All required reviews are approved (if configured)
+
+          To disable auto-merge, run:
+          \`\`\`bash
+          gh pr merge ${{ github.event.pull_request.number }} --disable-auto
+          \`\`\`
+          EOF
+          )" || echo "Comment already exists or couldn't be posted"
