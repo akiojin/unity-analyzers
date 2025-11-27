@@ -1,0 +1,90 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  validate-and-merge:
+    name: Validate and merge develop to main
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.head_ref == 'develop'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Auto-merge develop to main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --merge
+
+  create-release-pr:
+    name: Create release PR from develop to main
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for existing release PR
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          EXISTING_PR=$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "pr_number=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "⚠️  Release PR already exists: #$EXISTING_PR"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "✅ No existing release PR found"
+          fi
+
+      - name: Create release PR
+        if: steps.check-pr.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --base main \
+            --head develop \
+            --title "chore(release): merge develop to main" \
+            --body "$(cat <<'EOF'
+          ## Release Preparation
+
+          This PR merges the latest changes from \`develop\` into \`main\` to trigger the release process.
+
+          ### What happens after merge:
+          1. **release-please** analyzes commits and creates/updates a release PR
+          2. Release PR includes version bump and CHANGELOG updates
+          3. Merging the release PR will:
+             - Create a GitHub release and tag
+             - Build and publish the analyzer DLL
+             - Trigger OpenUPM publication
+
+          ### Conventional Commits Summary
+          See individual commits for details. Version will be determined automatically based on commit types:
+          - \`feat:\` → MINOR version bump
+          - \`fix:\` → PATCH version bump
+          - \`BREAKING CHANGE:\` → MAJOR version bump
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          EOF
+          )"
+
+      - name: Report existing PR
+        if: steps.check-pr.outputs.exists == 'true'
+        run: |
+          echo "Release PR already exists: #${{ steps.check-pr.outputs.pr_number }}"
+          echo "View at: https://github.com/${{ github.repository }}/pull/${{ steps.check-pr.outputs.pr_number }}"
