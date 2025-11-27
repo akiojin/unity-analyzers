@@ -1,6 +1,19 @@
 # Analyzer build artifacts (source is in Analyzers~)
 Analyzers~/bin/
 Analyzers~/obj/
+UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/bin/
+UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/obj/
+
+# Unity project generated files
+UnityAnalyzer/[Ll]ibrary/
+UnityAnalyzer/[Ll]ogs/
+UnityAnalyzer/[Tt]emp/
+UnityAnalyzer/[Oo]bj/
+UnityAnalyzer/[Bb]uild*/
+UnityAnalyzer/[Uu]ser[Ss]ettings/
+UnityAnalyzer/MemoryCaptures/
+UnityAnalyzer/[Pp]ackages/packages-lock.json
+.unity/
 
 # OS files
 .DS_Store
