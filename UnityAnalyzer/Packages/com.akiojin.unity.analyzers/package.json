@@ -4,9 +4,9 @@
   "displayName": "Unity Analyzers",
   "description": "Roslyn Analyzer package that enforces Fail-Fast principle and Unity optimization rules. Detects GetComponent calls in Update loops, forbidden Find methods, and null guards after DI injection.",
   "unity": "2021.3",
-  "documentationUrl": "https://github.com/akiojin/unity-analyzers",
-  "changelogUrl": "https://github.com/akiojin/unity-analyzers/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/akiojin/unity-analyzers/blob/main/LICENSE.md",
+  "documentationUrl": "https://github.com/akiojin/unity-analyzers/tree/main/UnityAnalyzer/Packages/com.akiojin.unity.analyzers",
+  "changelogUrl": "https://github.com/akiojin/unity-analyzers/blob/main/UnityAnalyzer/Packages/com.akiojin.unity.analyzers/CHANGELOG.md",
+  "licensesUrl": "https://github.com/akiojin/unity-analyzers/blob/main/UnityAnalyzer/Packages/com.akiojin.unity.analyzers/LICENSE.md",
   "keywords": [
     "analyzer",
     "roslyn",
