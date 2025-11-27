@@ -1,6 +1,6 @@
 {
   "name": "com.akiojin.unity.analyzers",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "displayName": "Unity Analyzers",
   "description": "Roslyn Analyzer package that enforces Fail-Fast principle and Unity optimization rules. Detects GetComponent calls in Update loops, forbidden Find methods, and null guards after DI injection.",
   "unity": "2021.3",
