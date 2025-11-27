@@ -1,0 +1,40 @@
+{
+  "name": "unity-analyzers-dev",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Development tooling for Unity Analyzers - Roslyn analyzers for Unity best practices",
+  "scripts": {
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore UnityAnalyzer",
+    "lint:md:fix": "markdownlint '**/*.md' --ignore node_modules --ignore UnityAnalyzer --fix",
+    "commitlint": "commitlint --edit",
+    "prepare": "husky install || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akiojin/unity-analyzers.git"
+  },
+  "keywords": [
+    "unity",
+    "roslyn",
+    "analyzer",
+    "csharp",
+    "code-quality",
+    "static-analysis"
+  ],
+  "author": "Akio Jinsenji",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akiojin/unity-analyzers/issues"
+  },
+  "homepage": "https://github.com/akiojin/unity-analyzers#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0",
+    "husky": "^9.0.10",
+    "markdownlint-cli": "^0.39.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
