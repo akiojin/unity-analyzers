@@ -2,19 +2,6 @@
 
 Fail-Fast原則とUnity最適化ルールを強制するRoslyn Analyzerパッケージです。
 
-## プロジェクト構造
-
-このリポジトリは以下の構成になっています：
-
-- **UnityAnalyzer/** - Unity 6000.2.14f1プロジェクト（テスト・開発用）
-  - **Packages/com.akiojin.unity.analyzers/** - 埋め込みUnityパッケージ
-    - `Analyzers~/` - C# Roslyn Analyzerソースコード
-    - `Plugins/` - ビルド済みAnalyzer DLL
-    - `Editor/` - Unity Editor拡張
-    - `package.json` - パッケージ定義
-
-Unityプロジェクトを開くと、埋め込みパッケージが自動的にインポートされます。レジストリ設定は不要です。
-
 ## 概要
 
 このパッケージは、Unity開発における以下の重要なルールをコンパイル時に検証します：
@@ -62,7 +49,7 @@ openupm add com.akiojin.unity.analyzers
 4. 以下のURLを入力：
 
 ```text
-https://github.com/akiojin/unity-analyzers.git
+https://github.com/akiojin/unity-analyzers.git?path=UnityAnalyzer/Packages/com.akiojin.unity.analyzers
 ```
 
 または`Packages/manifest.json`に直接追加：
@@ -70,7 +57,7 @@ https://github.com/akiojin/unity-analyzers.git
 ```json
 {
   "dependencies": {
-    "com.akiojin.unity.analyzers": "https://github.com/akiojin/unity-analyzers.git"
+    "com.akiojin.unity.analyzers": "https://github.com/akiojin/unity-analyzers.git?path=UnityAnalyzer/Packages/com.akiojin.unity.analyzers"
   }
 }
 ```
@@ -332,191 +319,6 @@ var component = GetComponent<SomeComponent>(); // この行は警告されない
 ```
 
 ただし、この方法は本当に必要な場合のみ使用してください。
-
-## 開発とコントリビューション
-
-### コントリビューションガイド
-
-このプロジェクトへのコントリビューションを歓迎します！詳細は[CONTRIBUTING.md](CONTRIBUTING.md)を参照してください。
-
-### リリースプロセス
-
-このプロジェクトは自動リリースフローを採用しています：
-
-#### Conventional Commits
-
-すべてのコミットは**Conventional Commits**形式に従う必要があります：
-
-```
-<type>(<scope>): <subject>
-
-例:
-feat(analyzer): add new Unity lifecycle rule
-fix(workflow): resolve build failure
-docs: update installation guide
-```
-
-主な`type`:
-- `feat`: 新機能（MINORバージョンアップ）
-- `fix`: バグ修正（PATCHバージョンアップ）
-- `feat!` または `BREAKING CHANGE`: 破壊的変更（MAJORバージョンアップ）
-
-詳細は[CONTRIBUTING.md](CONTRIBUTING.md#コミットメッセージ規約)を参照。
-
-#### 自動リリース
-
-1. **リリースPRの自動作成**
-   - `main`ブランチへのマージ時、[release-please](https://github.com/googleapis/release-please)が自動的にリリースPRを作成・更新
-   - コミットメッセージに基づいてバージョン番号を自動決定
-   - CHANGELOG.mdを自動更新
-
-2. **リリースの実行**
-   - リリースPRがマージされると：
-     - GitHubリリースとタグを自動作成
-     - C# Analyzerプロジェクトを自動ビルド
-     - `Plugins/StrictRules.Analyzers.dll`を自動更新
-     - OpenUPMへの公開をトリガー
-
-3. **継続的インテグレーション**
-   - すべてのPRで自動ビルド・テストを実行
-   - コミットメッセージ形式を自動検証
-   - パッケージ構造を自動検証
-
-### ローカル開発
-
-#### Makefileを使用（推奨）
-
-プロジェクトにはMakefileが用意されています：
-
-```bash
-# ヘルプを表示
-make help
-
-# Analyzerをビルド
-make build
-
-# ビルドしてPluginsにコピー
-make analyzer
-
-# コードをフォーマット
-make format
-
-# すべての品質チェックを実行
-make quality-checks
-
-# クリーンアップ
-make clean
-```
-
-#### 手動ビルド
-
-```bash
-# Analyzerプロジェクトをビルド
-cd Analyzers~
-dotnet build --configuration Release
-
-# ビルド済みDLLをPluginsにコピー
-cp bin/Release/netstandard2.0/StrictRules.Analyzers.dll ../Plugins/
-```
-
-詳細な開発ガイドラインは[CLAUDE.md](CLAUDE.md)を参照してください。
-
-### ワークフロー
-
-このプロジェクトは以下のGitHub Actionsワークフローを使用しています：
-
-#### Required Checks（必須チェック）
-
-すべてのプルリクエストで実行される必須チェック：
-
-- **Build** (`.github/workflows/build.yml`): C# Analyzerのビルドとテスト
-- **Lint** (`.github/workflows/lint.yml`): MarkdownとC#コードのリンティング
-- **Commit Lint** (`.github/workflows/commitlint.yml`): コミットメッセージ検証
-
-#### 自動化ワークフロー
-
-- **Release** (`.github/workflows/release.yml`): 自動リリース処理
-- **OpenUPM** (`.github/workflows/openupm.yml`): OpenUPM公開
-
-詳細は[Branch Protection設定](.github/BRANCH_PROTECTION.md)を参照してください。
-
-### Docker開発環境
-
-プロジェクトにはDocker開発環境が用意されています。
-
-#### 環境変数の設定
-
-まず、`.env`ファイルを作成します：
-
-```bash
-# .env.exampleをコピー
-cp .env.example .env
-
-# 必要に応じて.envを編集
-vim .env  # または任意のエディタ
-```
-
-#### Docker Composeを使用（推奨）
-
-```bash
-# コンテナをビルドして起動
-docker-compose up -d
-
-# 開発環境のシェルに入る
-docker-compose exec unity-analyzers-dev bash
-
-# コンテナ内でビルド
-make analyzer
-
-# コンテナを停止
-docker-compose down
-```
-
-#### Makefileでdocker-compose操作
-
-```bash
-# Docker開発環境を起動してシェルに入る
-make dev
-
-# Dockerイメージをビルド
-make docker-build
-
-# コンテナを起動
-make docker-up
-
-# コンテナに入る
-make docker-shell
-
-# コンテナを停止
-make docker-down
-
-# コンテナとボリュームを削除
-make docker-clean
-```
-
-#### ヘルパースクリプトを使用
-
-```bash
-# スクリプトに実行権限を付与
-chmod +x scripts/docker-dev.sh
-
-# コンテナを起動して開発環境に入る
-./scripts/docker-dev.sh up
-
-# Analyzerをビルド
-./scripts/docker-dev.sh analyzer
-
-# ヘルプを表示
-./scripts/docker-dev.sh help
-```
-
-#### Docker環境に含まれるツール
-
-- .NET 8 SDK
-- Node.js 20 LTS（ワークフローツール用）
-- GitHub CLI
-- commitlint
-- その他の開発ツール
 
 ## ライセンス
 
