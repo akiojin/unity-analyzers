@@ -25,15 +25,15 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Analyzers~/StrictRules.Analyzers.csproj
+        run: dotnet restore UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj
 
       - name: Build analyzer
-        run: dotnet build Analyzers~/StrictRules.Analyzers.csproj --configuration Release --no-restore
+        run: dotnet build UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj --configuration Release --no-restore
 
       - name: Run tests (if available)
         run: |
-          if [ -f "Analyzers~/StrictRules.Analyzers.Tests.csproj" ]; then
-            dotnet test Analyzers~/StrictRules.Analyzers.Tests.csproj --configuration Release --no-restore
+          if [ -f "UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.Tests.csproj" ]; then
+            dotnet test UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.Tests.csproj --configuration Release --no-restore
           else
             echo "No test project found, skipping tests"
           fi
@@ -43,18 +43,18 @@ jobs:
           echo "Validating Unity package structure..."
 
           # Check for required files
-          if [ ! -f "package.json" ]; then
+          if [ ! -f "UnityAnalyzer/Packages/com.akiojin.unity.analyzers/package.json" ]; then
             echo "Error: package.json not found"
             exit 1
           fi
 
           # Check for Plugins directory
-          if [ ! -d "Plugins" ]; then
+          if [ ! -d "UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Plugins" ]; then
             echo "Warning: Plugins directory not found"
           fi
 
           # Check if DLL exists
-          if [ ! -f "Plugins/StrictRules.Analyzers.dll" ]; then
+          if [ ! -f "UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Plugins/StrictRules.Analyzers.dll" ]; then
             echo "Warning: StrictRules.Analyzers.dll not found in Plugins/"
           fi
 
@@ -64,5 +64,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: analyzer-dll
-          path: Analyzers~/bin/Release/netstandard2.0/StrictRules.Analyzers.dll
+          path: UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/bin/Release/netstandard2.0/StrictRules.Analyzers.dll
           retention-days: 7

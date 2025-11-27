@@ -2,11 +2,11 @@
   "bootstrap-sha": "HEAD",
   "default-branch": "main",
   "packages": {
-    ".": {
+    "UnityAnalyzer/Packages/com.akiojin.unity.analyzers": {
       "release-type": "node",
       "package-name": "com.akiojin.unity.analyzers",
       "extra-files": [
-        "package.json"
+        "UnityAnalyzer/Packages/com.akiojin.unity.analyzers/package.json"
       ]
     }
   },

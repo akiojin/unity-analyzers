@@ -41,7 +41,7 @@ jobs:
           EOF
 
       - name: Run markdownlint
-        run: markdownlint '**/*.md' --ignore node_modules --ignore Analyzers~
+        run: markdownlint '**/*.md' --ignore node_modules --ignore UnityAnalyzer
 
   csharp-format:
     name: C# Code Formatting
@@ -57,7 +57,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Analyzers~/StrictRules.Analyzers.csproj
+        run: dotnet restore UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj
 
       - name: Check code formatting
-        run: dotnet format Analyzers~/StrictRules.Analyzers.csproj --verify-no-changes --verbosity diagnostic
+        run: dotnet format UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj --verify-no-changes --verbosity diagnostic

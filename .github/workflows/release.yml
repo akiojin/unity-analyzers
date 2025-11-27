@@ -41,15 +41,15 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Analyzers~/StrictRules.Analyzers.csproj
+        run: dotnet restore UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj
 
       - name: Build analyzer
-        run: dotnet build Analyzers~/StrictRules.Analyzers.csproj --configuration Release --no-restore
+        run: dotnet build UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/StrictRules.Analyzers.csproj --configuration Release --no-restore
 
       - name: Copy DLL to Plugins
         run: |
-          mkdir -p Plugins
-          cp Analyzers~/bin/Release/netstandard2.0/StrictRules.Analyzers.dll Plugins/
+          mkdir -p UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Plugins
+          cp UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Analyzers~/bin/Release/netstandard2.0/StrictRules.Analyzers.dll UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Plugins/
 
       - name: Configure Git
         run: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: Commit updated DLL
         run: |
-          git add Plugins/StrictRules.Analyzers.dll
+          git add UnityAnalyzer/Packages/com.akiojin.unity.analyzers/Plugins/StrictRules.Analyzers.dll
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
@@ -69,15 +69,15 @@ jobs:
       - name: Create package archive
         run: |
           mkdir -p dist
-          tar -czf dist/com.akiojin.unity.analyzers-${{ needs.release-please.outputs.version }}.tgz \
+          cd UnityAnalyzer/Packages/com.akiojin.unity.analyzers
+          tar -czf ../../../dist/com.akiojin.unity.analyzers-${{ needs.release-please.outputs.version }}.tgz \
             --exclude='.git*' \
             --exclude='Analyzers~' \
             --exclude='dist' \
-            --exclude='*.md' \
+            --exclude='*.meta' \
             package.json \
             Plugins/ \
-            Editor/ \
-            Runtime/
+            Editor/
 
       - name: Upload package to release
         env:
